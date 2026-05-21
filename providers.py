@@ -15,7 +15,7 @@ MODEL_METADATA: Dict[str, ModelCapability] = {
     # Lógica y Razonamiento (Thinking Models)
     "openai/gpt-oss-120b:free": { "hasThinking": True, "canSearch": True, "isMultimodal": False, "maxOutputTokens": 32768, "temperature": 0.6, "isHidden": False },
     "openai/gpt-oss-20b:free":  { "hasThinking": True, "canSearch": True, "isMultimodal": False, "maxOutputTokens": 16384, "temperature": 0.7, "isHidden": False },
-    "gemini/gemini-3-flash-preview": { "hasThinking": True, "canSearch": True, "isMultimodal": True, "maxOutputTokens": 8192, "temperature": 0.7, "isHidden": False },
+    "gemini/gemini-1.5-flash": { "hasThinking": True, "canSearch": True, "isMultimodal": True, "maxOutputTokens": 8192, "temperature": 0.7, "isHidden": False },
     
     # Conversación y Versatilidad (Groq / Cerebras)
     "groq/llama-3.3-70b-versatile": { "hasThinking": False, "canSearch": True, "isMultimodal": False, "maxOutputTokens": 4096, "temperature": 0.7, "isHidden": False },
@@ -35,7 +35,7 @@ MODEL_METADATA: Dict[str, ModelCapability] = {
 MODEL_LABELS: Dict[str, str] = {
     "openai/gpt-oss-120b:free": "GPT OSS 120B (OpenRouter)",
     "openai/gpt-oss-20b:free":  "GPT OSS 20B (OpenRouter)",
-    "gemini/gemini-3-flash-preview": "Gemini 3 Flash Preview",
+    "gemini/gemini-1.5-flash": "Gemini 1.5 Flash",
     "groq/llama-3.3-70b-versatile": "Olvera AI (Llama 3.3 70B)",
     "groq/llama-3.1-8b-instant":    "Olvera AI (Llama 3.1 8B)",
     "cerebras/llama3.1-70b":        "Olvera AI (Cerebras Ultra-Fast)",
@@ -46,7 +46,7 @@ MODEL_LABELS: Dict[str, str] = {
     "olvera-image-1.0": "Olvera Image 1.0 (Flux)",
 }
 
-DEFAULT_MODEL = "gemini/gemini-3-flash-preview"
+DEFAULT_MODEL = "gemini/gemini-1.5-flash"
 
 def get_visible_models() -> List[str]:
     return [m for m, meta in MODEL_METADATA.items() if not meta.get("isHidden", False)]
