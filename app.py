@@ -26,9 +26,9 @@ def apply_matplotlib_theme():
     plt.rcParams.update({
         'figure.facecolor': '#161f30',
         'axes.facecolor': '#161f30',
-        'axes.edgecolor': 'rgba(255,255,255,0.06)',
+        'axes.edgecolor': (1.0, 1.0, 1.0, 0.06),
         'axes.grid': True,
-        'grid.color': 'rgba(255,255,255,0.04)',
+        'grid.color': (1.0, 1.0, 1.0, 0.04),
         'grid.linestyle': '--',
         'text.color': '#f3f4f6',
         'axes.labelcolor': '#9ca3af',
