@@ -2,3 +2,7 @@ shiny>=1.0.0
 pandas
 matplotlib
 seaborn
+litellm
+python-dotenv
+tavily-python
+httpx
