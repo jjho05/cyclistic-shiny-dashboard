@@ -108,6 +108,92 @@ app_ui = ui.page_sidebar(
         # Cargar estilos externos personalizados
         ui.include_css(os.path.join(base_dir, "styles.css")),
         
+        # Inyectar estilos recursivamente dentro de Shadow DOM para tablas y código
+        ui.tags.script("""
+            function injectStylesRecursively(root) {
+                if (!root) return;
+                
+                // Si el elemento tiene Shadow DOM
+                if (root.shadowRoot) {
+                    const shadow = root.shadowRoot;
+                    if (!shadow.querySelector('#shadow-table-styles')) {
+                        const style = document.createElement('style');
+                        style.id = 'shadow-table-styles';
+                        style.textContent = `
+                            /* Tablas dentro del Shadow DOM */
+                            table {
+                                width: 100% !important;
+                                border-collapse: collapse !important;
+                                margin: 14px 0 !important;
+                                font-size: 0.84rem !important;
+                                background-color: #0f172a !important;
+                                color: #f3f4f6 !important;
+                                border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                                border-radius: 8px !important;
+                                overflow: hidden !important;
+                            }
+                            th {
+                                background-color: #1e293b !important;
+                                color: #ffffff !important;
+                                padding: 10px 14px !important;
+                                text-align: left !important;
+                                border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                                font-weight: 700 !important;
+                                letter-spacing: 0.5px !important;
+                                font-size: 0.8rem !important;
+                                text-transform: uppercase !important;
+                            }
+                            td {
+                                background-color: #111827 !important;
+                                color: #cbd5e1 !important;
+                                padding: 8px 14px !important;
+                                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                                vertical-align: top !important;
+                            }
+                            tr:nth-child(even) td {
+                                background-color: #0f172a !important;
+                            }
+                            tr:hover td {
+                                background-color: rgba(255, 255, 255, 0.04) !important;
+                            }
+                            
+                            /* Bloques de código (pre, code) dentro del Shadow DOM */
+                            pre, code, .code-block, .markdown-code-block {
+                                background-color: #0b0f19 !important;
+                                color: #f3f4f6 !important;
+                                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                                padding: 10px 12px !important;
+                                border-radius: 6px !important;
+                                font-family: monospace !important;
+                                display: block !important;
+                            }
+                            pre code {
+                                border: none !important;
+                                padding: 0 !important;
+                            }
+                        `;
+                        shadow.appendChild(style);
+                        console.log("[Shadow DOM] Estilos inyectados para tablas/código.");
+                    }
+                    // Buscar recursivamente dentro del Shadow DOM
+                    shadow.querySelectorAll('*').forEach(child => injectStylesRecursively(child));
+                }
+                
+                // Buscar recursivamente en hijos estándar
+                if (root.children) {
+                    Array.from(root.children).forEach(child => injectStylesRecursively(child));
+                }
+            }
+
+            function runShadowInjection() {
+                injectStylesRecursively(document.body);
+            }
+
+            // Monitorear e inyectar de manera constante cada 300ms
+            setInterval(runShadowInjection, 300);
+            document.addEventListener('DOMContentLoaded', runShadowInjection);
+        """),
+        
         # Cabecera Limpia (Título de la App)
         ui.div(
             ui.h1("Cyclistic Bike-Share Analysis", class_="dashboard-title"),
