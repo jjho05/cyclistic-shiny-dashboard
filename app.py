@@ -102,13 +102,10 @@ app_ui = ui.page_sidebar(
         ),
         width=290
     ),
-    
-    # CUERPO PRINCIPAL DEL TABLERO
-    ui.div(
-        # Cargar estilos externos personalizados
+
+    # Inyección de estilos y scripts en el head (estilo Epstein)
+    ui.tags.head(
         ui.include_css(os.path.join(base_dir, "styles.css")),
-        
-        # Inyectar estilos recursivamente dentro de Shadow DOM para tablas y código
         ui.tags.script("""
             function injectStylesRecursively(root) {
                 if (!root) return;
@@ -192,8 +189,11 @@ app_ui = ui.page_sidebar(
             // Monitorear e inyectar de manera constante cada 300ms
             setInterval(runShadowInjection, 300);
             document.addEventListener('DOMContentLoaded', runShadowInjection);
-        """),
-        
+        """)
+    ),
+    
+    # CUERPO PRINCIPAL DEL TABLERO
+    ui.div(
         # Cabecera Limpia (Título de la App)
         ui.div(
             ui.h1("Cyclistic Bike-Share Analysis", class_="dashboard-title"),
