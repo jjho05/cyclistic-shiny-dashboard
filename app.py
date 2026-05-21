@@ -53,12 +53,6 @@ COLOR_CASUAL = '#d946ef'  # Morado/Magenta Eléctrico
 app_ui = ui.page_sidebar(
     # PANEL LATERAL DE CONTROL (FILTROS PREMIUM SEPHORA-STYLE PERO SOBRIO)
     ui.sidebar(
-        # Badge de la Suite Olvera
-        ui.div(
-            "OLVERA AI SYSTEM",
-            class_="sidebar-title-badge"
-        ),
-        
         # Caja explicativa de grado forense
         ui.div(
             ui.div(
@@ -113,19 +107,6 @@ app_ui = ui.page_sidebar(
     ui.div(
         # Cargar estilos externos personalizados
         ui.include_css(os.path.join(base_dir, "styles.css")),
-        
-        # Línea de estilo neo-stripe minimalista (Monocromática sobria)
-        ui.div(class_="neon-top-stripe"),
-        
-        # Cabecera superior
-        ui.div(
-            ui.h1("Cyclistic Bike-Share Analysis", class_="dashboard-title"),
-            ui.div(
-                "Auditoría Estratégica de Movilidad & Copiloto Inteligente de Negocios",
-                class_="dashboard-subtitle"
-            ),
-            class_="dashboard-header"
-        ),
         
         # Estructura de Pestañas (Dashboard vs Olvera AI)
         ui.navset_tab(
@@ -434,8 +415,7 @@ app_ui = ui.page_sidebar(
             ),
             id="main_nav_tabs"
         )
-    ),
-    title="Cyclistic Performance Suite"
+    )
 )
 
 # --- LÓGICA DEL SERVIDOR (SERVER) ---
