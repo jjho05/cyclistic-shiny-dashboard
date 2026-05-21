@@ -108,6 +108,16 @@ app_ui = ui.page_sidebar(
         # Cargar estilos externos personalizados
         ui.include_css(os.path.join(base_dir, "styles.css")),
         
+        # Cabecera Limpia (Título de la App)
+        ui.div(
+            ui.h1("Cyclistic Bike-Share Analysis", class_="dashboard-title"),
+            ui.div(
+                "Auditoría Estratégica de Movilidad & Copiloto Inteligente de Negocios",
+                class_="dashboard-subtitle"
+            ),
+            style="margin: 0.5rem 0 1.5rem 0;"
+        ),
+        
         # Estructura de Pestañas (Dashboard vs Olvera AI)
         ui.navset_tab(
             # PESTAÑA 1: DASHBOARD
