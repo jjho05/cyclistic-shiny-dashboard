@@ -30,9 +30,8 @@ def resolve_model(model_id: str) -> tuple[str, dict]:
             "api_key": os.getenv("CEREBRAS_API_KEY")
         }
     if model_id.startswith("gemini/"):
-        return f"openrouter/{model_id}", {
-            "api_key": os.getenv("OPENROUTER_API_KEY"),
-            "api_base": "https://openrouter.ai/api/v1"
+        return model_id, {
+            "api_key": os.getenv("GEMINI_API_KEY")
         }
     return model_id, {}
 

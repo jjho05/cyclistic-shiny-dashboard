@@ -120,10 +120,9 @@ body {
     font-weight: 700;
     font-size: 1.8rem;
     letter-spacing: -0.04em;
-    background: linear-gradient(90deg, #ffffff, #9ca3af);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff !important;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
     margin: 0;
 }
 
@@ -627,4 +626,104 @@ shiny-chat-container {
     color: var(--text-secondary);
     margin-top: 2px;
 }
+
+/* ==========================================================================
+   === HIGH-CONTRAST CHAT VISIBILITY & OVERRIDES (SOBER & PREMIUM) =========
+   ========================================================================== */
+
+/* Forzar variables CSS heredables en los componentes web */
+.shiny-chat, 
+shiny-chat-messages,
+.shiny-chat-messages,
+.shiny-chat-message,
+.message-body,
+.message-content,
+.markdown-container,
+shiny-chat-container,
+[id="chat"] {
+    --chat-message-assistant-color: #f3f4f6 !important;
+    --chat-message-user-color: #ffffff !important;
+    --chat-message-assistant-bg: rgba(255, 255, 255, 0.03) !important;
+    --chat-message-user-bg: rgba(255, 255, 255, 0.06) !important;
+    --bs-body-color: #f3f4f6 !important;
+    --bs-heading-color: #ffffff !important;
+    color: #f3f4f6 !important;
+}
+
+/* Reglas universales y de etiquetas específicas para penetrar selectores */
+shiny-chat-container *,
+.shiny-chat *,
+.shiny-chat p,
+.shiny-chat li,
+.shiny-chat span,
+.shiny-chat div,
+.shiny-chat strong,
+.shiny-chat em,
+.shiny-chat-messages *,
+.shiny-chat-messages p,
+.shiny-chat-messages li,
+.shiny-chat-messages span,
+.shiny-chat-messages div,
+.shiny-chat-message-body *,
+.shiny-chat-message-body p,
+.shiny-chat-message-body li,
+.shiny-chat-message-body span,
+.message-body *,
+.message-body p,
+.message-body li,
+.message-body span,
+.message-content *,
+.message-content p,
+.message-content li,
+.message-content span,
+.markdown-container *,
+.markdown-container p,
+.markdown-container li,
+.markdown-container span {
+    color: #f3f4f6 !important; /* Blanco legible en todo el contenido */
+}
+
+/* Habilitar colores especiales para resaltar títulos y negritas */
+shiny-chat-container strong,
+.shiny-chat strong,
+.shiny-chat-messages strong,
+.markdown-container strong,
+.shiny-chat-message strong,
+.shiny-chat-message-assistant strong,
+.shiny-chat-message-user strong {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+shiny-chat-container h1, shiny-chat-container h2, shiny-chat-container h3, shiny-chat-container h4,
+.shiny-chat h1, .shiny-chat h2, .shiny-chat h3, .shiny-chat h4,
+.shiny-chat-messages h1, .shiny-chat-messages h2, .shiny-chat-messages h3,
+.markdown-container h1, .markdown-container h2, .markdown-container h3,
+.shiny-chat-message h1, .shiny-chat-message h2, .shiny-chat-message h3 {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Estilo del textarea y contenedor de entrada en el Chat */
+shiny-chat-container textarea,
+shiny-chat-container input,
+.shiny-chat-input,
+.shiny-chat-input-container,
+.shiny-chat-control,
+shiny-chat-container form textarea,
+shiny-chat-container textarea.form-control {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}
+
+shiny-chat-container textarea::placeholder,
+shiny-chat-container input::placeholder,
+shiny-chat-container textarea.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
 
