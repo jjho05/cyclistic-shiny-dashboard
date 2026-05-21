@@ -15,3 +15,7 @@ Thumbs.db
 # Configuración local de IDEs
 .vscode/
 .idea/
+
+# Variables de entorno y llaves
+.env
+

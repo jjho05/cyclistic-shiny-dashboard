@@ -5,19 +5,25 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from shiny import App, render, ui, reactive
+from dotenv import load_dotenv
+
+# Cargar configuraciones de proveedores e inteligencia
+import providers
+import logic
+
+# Cargar variables de entorno del archivo .env local
+base_dir = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(base_dir, '.env'))
 
 # Cargar los datos agrupados optimizados
-base_dir = os.path.dirname(os.path.abspath(__file__))
 data_path = os.path.join(base_dir, 'cyclistic_aggregated.csv')
 
 if os.path.exists(data_path):
-    # Especificar categorías y tipos para rendimiento y ordenamiento por defecto
     week_order = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
     df_all = pd.read_csv(data_path)
     df_all['day_of_week'] = pd.Categorical(df_all['day_of_week'], categories=week_order, ordered=True)
     df_all['tipo_usuario'] = pd.Categorical(df_all['tipo_usuario'], categories=['Miembro Anual', 'Usuario Casual'], ordered=True)
 else:
-    # Fallback si no existiera
     df_all = pd.DataFrame(columns=['tipo_usuario', 'day_of_week', 'hour', 'rideable_type', 'month_num', 'month_name', 'ride_count', 'avg_duration'])
 
 # --- Configuración Estética de Matplotlib (Estilo Cyber-Dark) ---
@@ -39,169 +45,248 @@ def apply_matplotlib_theme():
         'savefig.facecolor': '#161f30'
     })
 
-# Paleta de colores cyber
+# Paleta de colores de segmentos
 COLOR_MEMBER = '#00d2ff'  # Azul Neón
 COLOR_CASUAL = '#d946ef'  # Morado/Magenta Eléctrico
 
 # --- INTERFAZ DE USUARIO (UI) ---
-app_ui = ui.page_fluid(
-    # Cargar estilos externos personalizados
-    ui.include_css(os.path.join(base_dir, "styles.css")),
-    
-    ui.row(
-        # --- PANEL LATERAL DE CONTROL (FILTROS) ---
-        ui.column(
-            3,
-            ui.div(
-                ui.h3("CONFIGURACIÓN", class_="filter-title"),
-                
-                # Filtro: Tipo de Usuario
-                ui.input_checkbox_group(
-                    "user_types",
-                    "Segmento de Usuario",
-                    choices=["Miembro Anual", "Usuario Casual"],
-                    selected=["Miembro Anual", "Usuario Casual"]
-                ),
-                ui.hr(style="border-color: rgba(255,255,255,0.06); margin: 1.5rem 0;"),
-                
-                # Filtro: Mes del Año
-                ui.input_select(
-                    "months",
-                    "Filtrar por Mes",
-                    choices={
-                        "Todos": "Todos los Meses",
-                        "1": "Enero", "2": "Febrero", "3": "Marzo", "4": "Abril",
-                        "5": "Mayo", "6": "Junio", "7": "Julio", "8": "Agosto",
-                        "9": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
-                    },
-                    selected="Todos"
-                ),
-                ui.hr(style="border-color: rgba(255,255,255,0.06); margin: 1.5rem 0;"),
-                
-                # Filtro: Día de la Semana
-                ui.input_checkbox_group(
-                    "days",
-                    "Días de Operación",
-                    choices=["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
-                    selected=["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
-                ),
-                
-                style="margin-top: 1rem;"
-            ),
-            class_="filter-panel"
+app_ui = ui.page_sidebar(
+    # PANEL LATERAL DE CONTROL (FILTROS PREMIUM SEPHORA-STYLE PERO SOBRIO)
+    ui.sidebar(
+        # Badge de la Suite Olvera
+        ui.div(
+            "OLVERA AI SYSTEM",
+            class_="sidebar-title-badge"
         ),
         
-        # --- CUERPO PRINCIPAL DEL DASHBOARD ---
-        ui.column(
-            9,
-            # Cabecera de la Aplicación
+        # Caja explicativa de grado forense
+        ui.div(
             ui.div(
-                ui.h1("Cyclistic Bike-Share Analysis", class_="dashboard-title"),
+                "📊 AUDITORÍA REACTIVA",
+                class_="sidebar-description-title"
+            ),
+            ui.div(
+                "Este sistema realiza minería analítica sobre millones de registros históricos de Cyclistic. "
+                "Filtre el corpus de viajes y active a Olvera AI para obtener resúmenes estratégicos.",
+                class_="sidebar-description-text"
+            ),
+            class_="sidebar-description-box"
+        ),
+        
+        # Cabecera de los filtros
+        ui.div("🚨 CONTROL DE FILTROS", class_="sidebar-filter-header"),
+        
+        # Filtro: Tipo de Usuario
+        ui.input_checkbox_group(
+            "user_types",
+            "Segmento de Usuario:",
+            choices=["Miembro Anual", "Usuario Casual"],
+            selected=["Miembro Anual", "Usuario Casual"]
+        ),
+        ui.hr(style="border-color: rgba(255,255,255,0.06); margin: 1.5rem 0;"),
+        
+        # Filtro: Mes del Año
+        ui.input_select(
+            "months",
+            "Filtrar por Mes:",
+            choices={
+                "Todos": "Todos los Meses",
+                "1": "Enero", "2": "Febrero", "3": "Marzo", "4": "Abril",
+                "5": "Mayo", "6": "Junio", "7": "Julio", "8": "Agosto",
+                "9": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
+            },
+            selected="Todos"
+        ),
+        ui.hr(style="border-color: rgba(255,255,255,0.06); margin: 1.5rem 0;"),
+        
+        # Filtro: Día de la Semana
+        ui.input_checkbox_group(
+            "days",
+            "Días de Operación:",
+            choices=["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+            selected=["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+        ),
+        width=290
+    ),
+    
+    # CUERPO PRINCIPAL DEL TABLERO
+    ui.div(
+        # Cargar estilos externos personalizados
+        ui.include_css(os.path.join(base_dir, "styles.css")),
+        
+        # Línea de estilo neo-stripe minimalista (Monocromática sobria)
+        ui.div(class_="neon-top-stripe"),
+        
+        # Cabecera superior
+        ui.div(
+            ui.h1("Cyclistic Bike-Share Analysis", class_="dashboard-title"),
+            ui.div(
+                "Auditoría Estratégica de Movilidad & Copiloto Inteligente de Negocios",
+                class_="dashboard-subtitle"
+            ),
+            class_="dashboard-header"
+        ),
+        
+        # Estructura de Pestañas (Dashboard vs Olvera AI)
+        ui.navset_tab(
+            # PESTAÑA 1: DASHBOARD
+            ui.nav_panel(
+                "📊 Dashboard de Viajes",
                 ui.div(
-                    "Tablero de Control de Alta Fidelidad para el Análisis de Usuarios Anuales vs. Casuales",
-                    class_="dashboard-subtitle"
-                ),
-                class_="dashboard-header"
+                    # --- FILA DE TARJETAS KPI ---
+                    ui.row(
+                        # Tarjeta 1: Total de Viajes
+                        ui.column(
+                            3,
+                            ui.div(
+                                ui.div("Viajes Totales", class_="kpi-title"),
+                                ui.output_ui("kpi_total_rides"),
+                                ui.div("Registros agrupados", class_="kpi-footer"),
+                                class_="cyber-card"
+                            )
+                        ),
+                        # Tarjeta 2: Miembros Anuales
+                        ui.column(
+                            3,
+                            ui.div(
+                                ui.div("Miembros Anuales", class_="kpi-title"),
+                                ui.output_ui("kpi_member_percent"),
+                                ui.div("Cuota de mercado anual", class_="kpi-footer"),
+                                class_="cyber-card"
+                            )
+                        ),
+                        # Tarjeta 3: Usuarios Casuales
+                        ui.column(
+                            3,
+                            ui.div(
+                                ui.div("Usuarios Casuales", class_="kpi-title"),
+                                ui.output_ui("kpi_casual_percent"),
+                                ui.div("Uso recreativo/turístico", class_="kpi-footer"),
+                                class_="cyber-card"
+                            )
+                        ),
+                        # Tarjeta 4: Duración Promedio
+                        ui.column(
+                            3,
+                            ui.div(
+                                ui.div("Duración Promedio", class_="kpi-title"),
+                                ui.output_ui("kpi_avg_duration"),
+                                ui.div("Tiempo de viaje (minutos)", class_="kpi-footer"),
+                                class_="cyber-card"
+                            )
+                        ),
+                        class_="row-gap-4 mb-4"
+                    ),
+                    
+                    # --- REJILLA DE GRÁFICAS CON EXPLICACIONES EJECUTIVAS ---
+                    ui.row(
+                        # Gráfica 1: Distribución Horaria
+                        ui.column(
+                            6,
+                            ui.div(
+                                ui.div("Uso Horario (Distribución 24 horas)", class_="cyber-card-header"),
+                                ui.output_plot("plot_hourly_distribution"),
+                                ui.div(
+                                    ui.div("ANÁLISIS DE COMPORTAMIENTO DIARIO", class_="explanation-title"),
+                                    ui.div(
+                                        "Los miembros muestran picos definidos en horas de entrada y salida laboral (08:00 y 17:00), confirmando un uso utilitario. Los casuales tienen un incremento constante y suave hacia la tarde, indicando un uso recreativo.",
+                                        class_="explanation-text"
+                                    ),
+                                    class_="explanation-box"
+                                ),
+                                class_="cyber-card"
+                            )
+                        ),
+                        # Gráfica 2: Comportamiento por Día de la Semana
+                        ui.column(
+                            6,
+                            ui.div(
+                                ui.div("Uso Semanal (Día por Día)", class_="cyber-card-header"),
+                                ui.output_plot("plot_weekly_distribution"),
+                                ui.div(
+                                    ui.div("COMPORTAMIENTO SEMANAL", class_="explanation-title"),
+                                    ui.div(
+                                        "El volumen de miembros se mantiene estable de lunes a viernes y baja ligeramente en fines de semana. Por el contrario, los usuarios casuales se disparan dramáticamente el sábado y domingo, consolidando su perfil recreativo.",
+                                        class_="explanation-text"
+                                    ),
+                                    class_="explanation-box"
+                                ),
+                                class_="cyber-card"
+                            )
+                        ),
+                        class_="row-gap-4 mb-4"
+                    ),
+                    
+                    ui.row(
+                        # Gráfica 3: Estacionalidad Mensual
+                        ui.column(
+                            6,
+                            ui.div(
+                                ui.div("Tendencia Estacional (Viajes Mensuales)", class_="cyber-card-header"),
+                                ui.output_plot("plot_monthly_trend"),
+                                ui.div(
+                                    ui.div("ESTACIONALIDAD ANUAL", class_="explanation-title"),
+                                    ui.div(
+                                        "Ambos segmentos exhiben una fuerte contracción en los meses de invierno (diciembre a febrero) debido a las temperaturas extremas. El pico de actividad ocurre en verano (junio a agosto), donde la demanda se triplica.",
+                                        class_="explanation-text"
+                                    ),
+                                    class_="explanation-box"
+                                ),
+                                class_="cyber-card"
+                            )
+                        ),
+                        # Gráfica 4: Preferencia de Tipo de Bicicleta
+                        ui.column(
+                            6,
+                            ui.div(
+                                ui.div("Preferencias de Bicicleta", class_="cyber-card-header"),
+                                ui.output_plot("plot_bike_preferences"),
+                                ui.div(
+                                    ui.div("PREFERENCIA DE EQUIPOS", class_="explanation-title"),
+                                    ui.div(
+                                        "Las bicicletas clásicas y eléctricas son altamente demandadas por ambos segmentos. Cabe destacar que las bicicletas acopladas ('docked') son utilizadas de manera exclusiva por los usuarios casuales.",
+                                        class_="explanation-text"
+                                    ),
+                                    class_="explanation-box"
+                                ),
+                                class_="cyber-card"
+                            )
+                        ),
+                        class_="row-gap-4 mb-5"
+                    )
+                )
             ),
             
-            ui.div(
-                # --- FILA DE TARJETAS KPI ---
-                ui.row(
-                    # Tarjeta 1: Total de Viajes
-                    ui.column(
-                        3,
-                        ui.div(
-                            ui.div("Viajes Totales", class_="kpi-title"),
-                            ui.output_ui("kpi_total_rides"),
-                            ui.div("Registros cargados", class_="kpi-footer"),
-                            class_="cyber-card"
-                        )
+            # PESTAÑA 2: OLVERA AI
+            ui.nav_panel(
+                "💬 Copilot Olvera AI",
+                ui.div(
+                    # Banner de Bienvenida Olvera AI
+                    ui.div(
+                        ui.output_ui("welcome_ui"),
+                        style="margin-bottom: 1.5rem;"
                     ),
-                    # Tarjeta 2: Miembros Anuales
-                    ui.column(
-                        3,
-                        ui.div(
-                            ui.div("Miembros Anuales", class_="kpi-title"),
-                            ui.output_ui("kpi_member_percent"),
-                            ui.div("Cuota de mercado anual", class_="kpi-footer"),
-                            class_="cyber-card"
-                        )
-                    ),
-                    # Tarjeta 3: Usuarios Casuales
-                    ui.column(
-                        3,
-                        ui.div(
-                            ui.div("Usuarios Casuales", class_="kpi-title"),
-                            ui.output_ui("kpi_casual_percent"),
-                            ui.div("Uso recreativo/turístico", class_="kpi-footer"),
-                            class_="cyber-card"
-                        )
-                    ),
-                    # Tarjeta 4: Duración Promedio
-                    ui.column(
-                        3,
-                        ui.div(
-                            ui.div("Duración Promedio", class_="kpi-title"),
-                            ui.output_ui("kpi_avg_duration"),
-                            ui.div("Tiempo de viaje (minutos)", class_="kpi-footer"),
-                            class_="cyber-card"
-                        )
-                    ),
-                    class_="row-gap-4 mb-4"
-                ),
-                
-                # --- REJILLA DE GRÁFICAS INTERACTIVAS ---
-                ui.row(
-                    # Gráfica 1: Distribución Horaria
-                    ui.column(
-                        6,
-                        ui.div(
-                            ui.div("Uso Horario (Distribución 24 horas)", class_="section-title"),
-                            ui.output_plot("plot_hourly_distribution"),
-                            class_="cyber-card"
-                        )
-                    ),
-                    # Gráfica 2: Comportamiento por Día de la Semana
-                    ui.column(
-                        6,
-                        ui.div(
-                            ui.div("Uso Semanal (Día por Día)", class_="section-title"),
-                            ui.output_plot("plot_weekly_distribution"),
-                            class_="cyber-card"
-                        )
-                    ),
-                    class_="row-gap-4 mb-4"
-                ),
-                
-                ui.row(
-                    # Gráfica 3: Estacionalidad Mensual
-                    ui.column(
-                        6,
-                        ui.div(
-                            ui.div("Tendencia Estacional (Viajes Mensuales)", class_="section-title"),
-                            ui.output_plot("plot_monthly_trend"),
-                            class_="cyber-card"
-                        )
-                    ),
-                    # Gráfica 4: Preferencia de Tipo de Bicicleta
-                    ui.column(
-                        6,
-                        ui.div(
-                            ui.div("Preferencias de Bicicleta", class_="section-title"),
-                            ui.output_plot("plot_bike_preferences"),
-                            class_="cyber-card"
-                        )
-                    ),
-                    class_="row-gap-4 mb-5"
-                ),
-                style="padding: 0 1.5rem;"
-            )
+                    # Componente Shiny Chat
+                    ui.chat_ui("chat"),
+                    # Barra de herramientas de estado inferior
+                    ui.output_ui("chat_toolbar_ui"),
+                    style="padding: 1.5rem; max-width: 900px; margin: 0 auto;"
+                )
+            ),
+            id="main_nav_tabs"
         )
-    )
+    ),
+    title="Cyclistic Performance Suite"
 )
 
 # --- LÓGICA DEL SERVIDOR (SERVER) ---
 def server(input, output, session):
+    
+    # Estado reactivo para limpiar banner de bienvenida al enviar un mensaje
+    is_empty = reactive.Value(True)
+    
+    # Inicialización del componente Chat
+    chat = ui.Chat(id="chat")
     
     # 1. Filtro Reactivo de Datos
     @reactive.Calc
@@ -273,7 +358,6 @@ def server(input, output, session):
         if total == 0:
             return ui.HTML('<span class="kpi-value total">0.0</span>')
             
-        # Cálculo exacto ponderado de duración promedio
         weighted_duration = (df['avg_duration'] * df['ride_count']).sum() / total
         return ui.HTML(f'<span class="kpi-value total">{weighted_duration:.1f}</span>')
 
@@ -285,27 +369,24 @@ def server(input, output, session):
     def plot_hourly_distribution():
         df = filtered_data()
         apply_matplotlib_theme()
-        fig, ax = plt.subplots(figsize=(6, 3.5), dpi=120)
+        fig, ax = plt.subplots(figsize=(6, 3.2), dpi=120)
         
         if not df.empty:
-            # Agrupar por tipo de usuario y hora
             hourly = df.groupby(['tipo_usuario', 'hour'], observed=False)['ride_count'].sum().reset_index()
             
             for utype, color in [('Miembro Anual', COLOR_MEMBER), ('Usuario Casual', COLOR_CASUAL)]:
                 sub_df = hourly[hourly['tipo_usuario'] == utype]
                 if not sub_df.empty:
-                    # Gráfica de línea suave
-                    ax.plot(sub_df['hour'], sub_df['ride_count'], label=utype, color=color, linewidth=2.5, marker='o', markersize=4)
+                    ax.plot(sub_df['hour'], sub_df['ride_count'], label=utype, color=color, linewidth=2.5, marker='o', markersize=3.5)
                     ax.fill_between(sub_df['hour'], sub_df['ride_count'], alpha=0.08, color=color)
         
-        ax.set_title("Cantidad de Viajes por Hora del Día", fontsize=10, fontweight='bold', pad=10)
-        ax.set_xlabel("Hora (24h)", fontsize=8)
-        ax.set_ylabel("Viajes Totales", fontsize=8)
+        ax.set_title("Cantidad de Viajes por Hora del Día", fontsize=9, fontweight='bold', pad=8)
+        ax.set_xlabel("Hora (24h)", fontsize=7.5)
+        ax.set_ylabel("Viajes Totales", fontsize=7.5)
         ax.set_xticks(range(0, 24, 2))
-        ax.tick_params(axis='both', labelsize=8)
-        ax.legend(frameon=False, fontsize=8, loc='upper left')
+        ax.tick_params(axis='both', labelsize=7.5)
+        ax.legend(frameon=False, fontsize=7.5, loc='upper left')
         
-        # Formatear el eje Y con separadores de miles
         ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
         return fig
 
@@ -315,13 +396,11 @@ def server(input, output, session):
     def plot_weekly_distribution():
         df = filtered_data()
         apply_matplotlib_theme()
-        fig, ax = plt.subplots(figsize=(6, 3.5), dpi=120)
+        fig, ax = plt.subplots(figsize=(6, 3.2), dpi=120)
         
         if not df.empty:
-            # Agrupar por tipo de usuario y día de la semana
             weekly = df.groupby(['tipo_usuario', 'day_of_week'], observed=False)['ride_count'].sum().reset_index()
             
-            # Dibujar barras agrupadas con un espaciador
             days = weekly['day_of_week'].unique()
             x = range(len(days))
             width = 0.35
@@ -335,15 +414,14 @@ def server(input, output, session):
                 ax.bar([pos + width/2 for pos in x], casual_data['ride_count'], width, label='Usuario Casual', color=COLOR_CASUAL, edgecolor='none', alpha=0.9)
                 
             ax.set_xticks(x)
-            ax.set_xticklabels(days, rotation=15)
+            ax.set_xticklabels(days, rotation=10)
             
-        ax.set_title("Viajes por Día de la Semana", fontsize=10, fontweight='bold', pad=10)
-        ax.set_xlabel("Día de la Semana", fontsize=8)
-        ax.set_ylabel("Viajes Totales", fontsize=8)
-        ax.tick_params(axis='both', labelsize=8)
-        ax.legend(frameon=False, fontsize=8)
+        ax.set_title("Viajes por Día de la Semana", fontsize=9, fontweight='bold', pad=8)
+        ax.set_xlabel("Día de la Semana", fontsize=7.5)
+        ax.set_ylabel("Viajes Totales", fontsize=7.5)
+        ax.tick_params(axis='both', labelsize=7.5)
+        ax.legend(frameon=False, fontsize=7.5)
         
-        # Formatear eje Y
         ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
         return fig
 
@@ -353,10 +431,9 @@ def server(input, output, session):
     def plot_monthly_trend():
         df = filtered_data()
         apply_matplotlib_theme()
-        fig, ax = plt.subplots(figsize=(6, 3.5), dpi=120)
+        fig, ax = plt.subplots(figsize=(6, 3.2), dpi=120)
         
         if not df.empty:
-            # Agrupar por tipo de usuario, número y nombre de mes
             monthly = df.groupby(['tipo_usuario', 'month_num', 'month_name'], observed=False)['ride_count'].sum().reset_index()
             monthly.sort_values('month_num', inplace=True)
             
@@ -366,23 +443,21 @@ def server(input, output, session):
             for utype, color in [('Miembro Anual', COLOR_MEMBER), ('Usuario Casual', COLOR_CASUAL)]:
                 sub_df = monthly[monthly['tipo_usuario'] == utype]
                 if not sub_df.empty:
-                    # Rellenar meses faltantes si es necesario
                     full_series = pd.DataFrame({'month_num': x})
                     sub_df = pd.merge(full_series, sub_df, on='month_num', how='left').fillna(0)
                     
-                    ax.plot(sub_df['month_num'], sub_df['ride_count'], label=utype, color=color, linewidth=2.5, marker='s', markersize=4)
+                    ax.plot(sub_df['month_num'], sub_df['ride_count'], label=utype, color=color, linewidth=2.5, marker='s', markersize=3.5)
                     ax.fill_between(sub_df['month_num'], sub_df['ride_count'], alpha=0.08, color=color)
             
             ax.set_xticks(x)
             ax.set_xticklabels(months_names)
             
-        ax.set_title("Volumen de Viajes Mensuales (Tendencia Anual)", fontsize=10, fontweight='bold', pad=10)
-        ax.set_xlabel("Mes", fontsize=8)
-        ax.set_ylabel("Viajes Totales", fontsize=8)
-        ax.tick_params(axis='both', labelsize=8)
-        ax.legend(frameon=False, fontsize=8)
+        ax.set_title("Volumen de Viajes Mensuales (Tendencia Anual)", fontsize=9, fontweight='bold', pad=8)
+        ax.set_xlabel("Mes", fontsize=7.5)
+        ax.set_ylabel("Viajes Totales", fontsize=7.5)
+        ax.tick_params(axis='both', labelsize=7.5)
+        ax.legend(frameon=False, fontsize=7.5)
         
-        # Formatear eje Y
         ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
         return fig
 
@@ -392,13 +467,11 @@ def server(input, output, session):
     def plot_bike_preferences():
         df = filtered_data()
         apply_matplotlib_theme()
-        fig, ax = plt.subplots(figsize=(6, 3.5), dpi=120)
+        fig, ax = plt.subplots(figsize=(6, 3.2), dpi=120)
         
         if not df.empty:
-            # Agrupar por tipo de usuario y tipo de bicicleta
             bikes = df.groupby(['tipo_usuario', 'rideable_type'], observed=False)['ride_count'].sum().reset_index()
             
-            # Formatear etiquetas de tipos de bicicletas en español
             bike_mapping = {
                 'classic_bike': 'Clásica',
                 'electric_bike': 'Eléctrica',
@@ -413,7 +486,6 @@ def server(input, output, session):
             member_data = bikes[bikes['tipo_usuario'] == 'Miembro Anual']
             casual_data = bikes[bikes['tipo_usuario'] == 'Usuario Casual']
             
-            # Rellenar nulos
             m_rides = [member_data[member_data['tipo_bici'] == t]['ride_count'].sum() for t in types]
             c_rides = [casual_data[casual_data['tipo_bici'] == t]['ride_count'].sum() for t in types]
             
@@ -423,15 +495,196 @@ def server(input, output, session):
             ax.set_xticks(x)
             ax.set_xticklabels(types)
             
-        ax.set_title("Preferencias por Tipo de Bicicleta", fontsize=10, fontweight='bold', pad=10)
-        ax.set_xlabel("Tipo de Bicicleta", fontsize=8)
-        ax.set_ylabel("Viajes Totales", fontsize=8)
-        ax.tick_params(axis='both', labelsize=8)
-        ax.legend(frameon=False, fontsize=8)
+        ax.set_title("Preferencias por Tipo de Bicicleta", fontsize=9, fontweight='bold', pad=8)
+        ax.set_xlabel("Tipo de Bicicleta", fontsize=7.5)
+        ax.set_ylabel("Viajes Totales", fontsize=7.5)
+        ax.tick_params(axis='both', labelsize=7.5)
+        ax.legend(frameon=False, fontsize=7.5)
         
-        # Formatear eje Y
         ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
         return fig
 
-# --- INICIALIZACIÓN DE LA APP ---
+    # --- LÓGICA DE COPILOT OLVERA AI ---
+
+    # Escucha el envío del formulario de chat y responde
+    @chat.on_user_submit
+    async def _handle_chat_submit():
+        is_empty.set(False)
+        ui_messages = list(chat.messages())
+        if len(ui_messages) > 10:
+            ui_messages = ui_messages[-10:]
+            
+        # Crear copia limpia de mensajes
+        llm_messages = []
+        for m in ui_messages:
+            role = m.role if hasattr(m, 'role') else m.get('role', '')
+            content = m.content if hasattr(m, 'content') else m.get('content', '')
+            llm_messages.append({"role": role, "content": content})
+            
+        # Inyectar el contexto reactivo actual del dashboard en tiempo real
+        try:
+            with reactive.isolate():
+                df = filtered_data()
+                total_rides = int(df['ride_count'].sum()) if not df.empty else 0
+                
+                # Calcular porcentajes reactivos
+                if total_rides > 0:
+                    member_rides = df[df['tipo_usuario'] == 'Miembro Anual']['ride_count'].sum()
+                    casual_rides = df[df['tipo_usuario'] == 'Usuario Casual']['ride_count'].sum()
+                    member_pct = (member_rides / total_rides) * 100
+                    casual_pct = (casual_rides / total_rides) * 100
+                    avg_duration = (df['avg_duration'] * df['ride_count']).sum() / total_rides
+                else:
+                    member_pct = 0.0
+                    casual_pct = 0.0
+                    avg_duration = 0.0
+                
+                active_users = input.user_types()
+                active_month = input.months()
+                active_days = input.days()
+                
+            ctx = f"\n\n[CONTEXTO EN TIEMPO REAL DEL DASHBOARD CYCLISTIC - FILTROS ACTIVOS]\n"
+            ctx += f"- Segmentos seleccionados: {', '.join(active_users) if active_users else 'Ninguno'}\n"
+            ctx += f"- Mes filtrado: {active_month}\n"
+            ctx += f"- Días de operación: {', '.join(active_days) if active_days else 'Ninguno'}\n"
+            ctx += f"- Viajes Totales Calculados: {total_rides:,}\n"
+            ctx += f"- Cuota de Miembros Anuales: {member_pct:.1f}%\n"
+            ctx += f"- Cuota de Usuarios Casuales: {casual_pct:.1f}%\n"
+            ctx += f"- Duración de Viaje Promedio: {avg_duration:.1f} minutos\n"
+            ctx += f"Por favor, integra este contexto en tu análisis si es relevante para responder a la consulta del usuario."
+            
+            if llm_messages and llm_messages[-1]["role"] == "user":
+                llm_messages[-1]["content"] += ctx
+        except Exception as e:
+            print(f"Error inyectando contexto reactivo en Olvera AI: {e}")
+
+        # Ejecutar streaming de la respuesta usando el modelo configurado
+        async_gen = logic.stream_chat_response(
+            messages=llm_messages,
+            model=providers.DEFAULT_MODEL,
+            web_search_enabled=False,
+            image_b64=None
+        )
+        await chat.append_message_stream(async_gen)
+
+    # Evento de clic en los chips de sugerencia rápida
+    @reactive.Effect
+    @reactive.event(input.suggestion_click)
+    async def _handle_suggestion_click():
+        prompt = input.suggestion_click()
+        if not prompt:
+            return
+        is_empty.set(False)
+        await chat.append_message({"role": "user", "content": prompt})
+        
+        # Enviar inmediatamente con contexto enriquecido
+        try:
+            with reactive.isolate():
+                df = filtered_data()
+                total_rides = int(df['ride_count'].sum()) if not df.empty else 0
+                if total_rides > 0:
+                    member_rides = df[df['tipo_usuario'] == 'Miembro Anual']['ride_count'].sum()
+                    casual_rides = df[df['tipo_usuario'] == 'Usuario Casual']['ride_count'].sum()
+                    member_pct = (member_rides / total_rides) * 100
+                    casual_pct = (casual_rides / total_rides) * 100
+                    avg_duration = (df['avg_duration'] * df['ride_count']).sum() / total_rides
+                else:
+                    member_pct = 0.0
+                    casual_pct = 0.0
+                    avg_duration = 0.0
+                
+                active_users = input.user_types()
+                active_month = input.months()
+                active_days = input.days()
+                
+            ctx = f"\n\n[CONTEXTO EN TIEMPO REAL DEL DASHBOARD CYCLISTIC - FILTROS ACTIVOS]\n"
+            ctx += f"- Segmentos seleccionados: {', '.join(active_users) if active_users else 'Ninguno'}\n"
+            ctx += f"- Mes filtrado: {active_month}\n"
+            ctx += f"- Días de operación: {', '.join(active_days) if active_days else 'Ninguno'}\n"
+            ctx += f"- Viajes Totales Calculados: {total_rides:,}\n"
+            ctx += f"- Cuota de Miembros Anuales: {member_pct:.1f}%\n"
+            ctx += f"- Cuota de Usuarios Casuales: {casual_pct:.1f}%\n"
+            ctx += f"- Duración de Viaje Promedio: {avg_duration:.1f} minutos\n"
+            
+            enriched_prompt = prompt + ctx
+        except Exception as e:
+            print(f"Error inyectando contexto de sugerencia rápida: {e}")
+            enriched_prompt = prompt
+            
+        messages = [{"role": "user", "content": enriched_prompt}]
+        async_gen = logic.stream_chat_response(
+            messages=messages,
+            model=providers.DEFAULT_MODEL,
+            web_search_enabled=False,
+            image_b64=None
+        )
+        await chat.append_message_stream(async_gen)
+
+    # Renderizar el Banner de Bienvenida Premium y Chips en Blanco y Negro (Sober)
+    @output
+    @render.ui
+    def welcome_ui():
+        if not is_empty.get():
+            return ui.div()
+        return ui.div(
+            ui.div(
+                ui.HTML("""
+                    <div class="welcome-icon-box">
+                        <svg viewBox='0 0 24 24' fill='none' stroke='#ffffff' stroke-width='1.5' style='width:32px;height:32px;'>
+                            <path d='M12 2L3 7V17L12 22L21 17V7L12 2Z'/>
+                            <path d='M12 22V12'/><path d='M12 12L21 7'/><path d='M12 12L3 7'/>
+                        </svg>
+                    </div>
+                    <h2 class="welcome-title-text">Hola, soy Olvera AI</h2>
+                    <p class="welcome-description-text">
+                        Soy tu asistente de inteligencia de negocios. Tengo acceso en tiempo real a las métricas, 
+                        gráficos de distribución horaria, estacionalidad y preferencias de bicicletas de Cyclistic. 
+                        ¿Qué aspecto estratégico deseas auditar hoy?
+                    </p>
+                """),
+                class_="welcome-ui-container"
+            ),
+            ui.div(
+                # Chip 1: Explicar Métricas
+                ui.div(
+                    ui.HTML("<div class=\"suggestion-box-title\">📊 Explicar Métricas Actuales</div><div class=\"suggestion-box-desc\">Analiza y resume los KPIs y gráficos activos en el dashboard.</div>"),
+                    onclick="Shiny.setInputValue('suggestion_click', 'Realiza una auditoría analítica exhaustiva de las métricas y gráficos actuales del dashboard. ¿Qué tendencias críticas observas?', {priority:'event'})",
+                    class_="chat-suggestion-box"
+                ),
+                # Chip 2: Perfiles de Usuario
+                ui.div(
+                    ui.HTML("<div class=\"suggestion-box-title\">⚡ Perfiles de Segmento</div><div class=\"suggestion-box-desc\">Compara las diferencias de comportamiento clave de miembros vs. casuales.</div>"),
+                    onclick="Shiny.setInputValue('suggestion_click', '¿Cuáles son las diferencias críticas de comportamiento (horarios, días, tipos de bicicleta) entre miembros anuales y casuales en base a los datos?', {priority:'event'})",
+                    class_="chat-suggestion-box"
+                ),
+                # Chip 3: Estrategia de Conversión
+                ui.div(
+                    ui.HTML("<div class=\"suggestion-box-title\">📈 Estrategia de Conversión</div><div class=\"suggestion-box-desc\">Propón campañas de marketing de alta conversión basadas en los hallazgos.</div>"),
+                    onclick="Shiny.setInputValue('suggestion_click', 'Sugiere 3 campañas de marketing digital altamente efectivas diseñadas para convertir a los usuarios casuales de Cyclistic en miembros anuales.', {priority:'event'})",
+                    class_="chat-suggestion-box"
+                ),
+                # Chip 4: Estacionalidad de Viajes
+                ui.div(
+                    ui.HTML("<div class=\"suggestion-box-title\">❄️ Impacto Estacional</div><div class=\"suggestion-box-desc\">Analiza las tendencias estacionales y cómo mitigar los meses fríos.</div>"),
+                    onclick="Shiny.setInputValue('suggestion_click', 'Explica la estacionalidad mensual observada en los viajes de Cyclistic. ¿Cómo deberíamos reaccionar ante la brecha invernal?', {priority:'event'})",
+                    class_="chat-suggestion-box"
+                ),
+                class_="suggestion-chips-grid"
+            ),
+            style="max-width:720px; margin:0 auto;"
+        )
+
+    # Renderizar el pie de página de estado del chat
+    @output
+    @render.ui
+    def chat_toolbar_ui():
+        return ui.HTML("""
+            <div style='border-top:1px solid rgba(255, 255, 255, 0.08); padding:10px 6px 0; margin-top:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;'>
+                <span style='font-size:0.75rem; color:#ffffff; font-weight:700; letter-spacing:0.5px;'>OLVERA AI SUITE</span>
+                <span style='font-size:0.75rem; color:rgba(255, 255, 255, 0.2);'>|</span>
+                <span style='font-size:0.75rem; color:#9ca3af;'>Engine: Gemini 3 Flash &bull; Contexto reactivo del dashboard inyectado en cada consulta</span>
+            </div>
+        """)
+
+# Instanciar aplicación Shiny
 app = App(app_ui, server)
