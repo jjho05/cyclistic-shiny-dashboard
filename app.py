@@ -273,6 +273,165 @@ app_ui = ui.page_sidebar(
                     style="padding: 1.5rem; max-width: 900px; margin: 0 auto;"
                 )
             ),
+            
+            # PESTAÑA 3: REPORTE EJECUTIVO
+            ui.nav_panel(
+                "📖 Reporte Ejecutivo",
+                ui.div(
+                    # Grid Layout para el Reporte Ejecutivo
+                    ui.row(
+                        # Columna Izquierda: Introducción, Preguntas y Procesamiento
+                        ui.column(
+                            6,
+                            # Sección 1: Tarea Empresarial y Contexto
+                            ui.div(
+                                ui.div("1. Contexto & Tarea Empresarial", class_="report-card-header"),
+                                ui.div(
+                                    ui.HTML("""
+                                        <p>El objetivo central de este proyecto es <strong>maximizar la rentabilidad de Cyclistic</strong>. Dado que los analistas financieros determinaron que los miembros anuales son significativamente más rentables que los ciclistas ocasionales, la dirección estratégica ha definido que la <strong>conversión de usuarios ocasionales a socios anuales</strong> es la vía más sólida para el crecimiento corporativo duradero.</p>
+                                        <div class="report-badge-container">
+                                            <span class="report-badge-sober">FOCO ESTRATÉGICO</span>
+                                            <span class="report-badge-sober">CONVERSIÓN DE SEGMENTO</span>
+                                        </div>
+                                    """),
+                                    class_="report-card-body"
+                                ),
+                                class_="report-card"
+                            ),
+                            
+                            # Sección 2: La Problemática y Preguntas Clave
+                            ui.div(
+                                ui.div("2. Problemática y Preguntas Orientadoras", class_="report-card-header"),
+                                ui.div(
+                                    ui.HTML("""
+                                        <div class="quote-block-sober">
+                                            ¿En qué se diferencian los socios anuales y los ciclistas ocasionales con respecto al uso de las bicicletas de Cyclistic?
+                                        </div>
+                                        <p style="margin-top: 1rem;">Esta pregunta clave busca aislar los comportamientos de ambos tipos de usuarios para diseñar estrategias de marketing altamente personalizadas, con el fin de incentivar a los ciclistas ocasionales a adquirir membresías anuales.</p>
+                                        <h4 class="report-sub-title">Interesados Clave (Stakeholders):</h4>
+                                        <ul class="report-bullet-list">
+                                            <li><strong>Lily Moreno:</strong> Directora de marketing y responsable del desarrollo de campañas para promover el programa de bicicletas compartidas.</li>
+                                            <li><strong>Equipo de análisis de datos de marketing:</strong> Responsable de recopilar, analizar y reportar los datos estratégicos de los viajes.</li>
+                                            <li><strong>Equipo ejecutivo de Cyclistic:</strong> Decisores finales sumamente detallistas que evaluarán y aprobarán el plan recomendado.</li>
+                                        </ul>
+                                    """),
+                                    class_="report-card-body"
+                                ),
+                                class_="report-card"
+                            ),
+                            
+                            # Sección 3: Preparación y Procesamiento de Datos
+                            ui.div(
+                                ui.div("3. Preparación y Procesamiento de Datos", class_="report-card-header"),
+                                ui.div(
+                                    ui.HTML("""
+                                        <p>Se utilizaron los datos históricos reales de viajes de la empresa (red de Chicago, Divvy Trip Data) de 12 meses consecutivos (abril 2021 a marzo 2022).</p>
+                                        <div class="alert-block-sober">
+                                            <strong>Integridad de los Datos (Evaluación ROCCC):</strong> Confiables, Originales, Integrales (5,723,532 viajes brutos), Actuales y Citados bajo licencia de uso abierto de Chicago.
+                                        </div>
+                                        <p style="margin-top: 1rem;"><strong>Privacidad de Datos (PII):</strong> Por estrictas directivas de privacidad, se eliminó y prohibió el uso de cualquier información de identificación personal (nombres, tarjetas, direcciones), impidiendo conectar viajes con individuos específicos.</p>
+                                        <p><strong>Herramientas Utilizadas:</strong> Python 3.11 y la librería Pandas (debido a que Excel colapsa ante los 5.7M de registros). Se removieron 4,797 registros erróneos (viajes <= 0 min o > 24 horas), logrando un conjunto limpio con un <strong>99.92% de integridad</strong>.</p>
+                                    """),
+                                    class_="report-card-body"
+                                ),
+                                class_="report-card"
+                            ),
+                            class_="row-gap-4"
+                        ),
+                        
+                        # Columna Derecha: Hallazgos, Estrategias de Marketing y Conclusión
+                        ui.column(
+                            6,
+                            # Sección 4: Qué se Encontró (Hallazgos Críticos)
+                            ui.div(
+                                ui.div("4. Qué se Encontró (Hallazgos Críticos)", class_="report-card-header"),
+                                ui.div(
+                                    ui.HTML("""
+                                        <p>El análisis descriptivo revela un comportamiento radicalmente distinto entre ambos perfiles de usuarios. Los socios anuales utilizan el servicio de forma utilitaria y predecible, mientras que los casuales muestran un perfil marcadamente recreativo.</p>
+                                        <div class="metrics-grid-sober">
+                                            <div class="metric-item-sober">
+                                                <div class="metric-val-sober" style="color:var(--color-member);">55.5%</div>
+                                                <div class="metric-lbl-sober">Viajes por Socios</div>
+                                            </div>
+                                            <div class="metric-item-sober">
+                                                <div class="metric-val-sober" style="color:var(--color-casual);">44.5%</div>
+                                                <div class="metric-lbl-sober">Viajes por Casuales</div>
+                                            </div>
+                                            <div class="metric-item-sober">
+                                                <div class="metric-val-sober">13.1 min</div>
+                                                <div class="metric-lbl-sober">Duración Media Socio</div>
+                                            </div>
+                                            <div class="metric-item-sober">
+                                                <div class="metric-val-sober">26.5 min</div>
+                                                <div class="metric-lbl-sober">Duración Media Casual</div>
+                                            </div>
+                                        </div>
+                                        <ul class="report-bullet-list" style="margin-top: 1rem;">
+                                            <li><strong>Frecuencia y Días:</strong> Los socios tienen una demanda estable de lunes a viernes (commuting). Los casuales se concentran masivamente los fines de semana (picos los sábados con >500k viajes).</li>
+                                            <li><strong>Curva Horaria:</strong> Los socios muestran dos picos sumamente definidos en días laborables (08:00 AM y 05:00 PM). Los casuales muestran una curva suave y creciente que alcanza su máximo por la tarde (03:00 PM - 05:00 PM).</li>
+                                            <li><strong>Tipos de Bicicleta:</strong> Ambos prefieren las bicicletas clásicas y eléctricas. Sin embargo, las <strong>Bicicletas Acopladas (Docked Bikes)</strong> son utilizadas única y exclusivamente por los usuarios ocasionales.</li>
+                                        </ul>
+                                    """),
+                                    class_="report-card-body"
+                                ),
+                                class_="report-card"
+                            ),
+                            
+                            # Sección 5: Estrategias de Marketing Recomendadas
+                            ui.div(
+                                ui.div("5. Estrategias de Marketing de Conversión", class_="report-card-header"),
+                                ui.div(
+                                    ui.HTML("""
+                                        <div class="strat-item-sober">
+                                            <div class="strat-num-sober">1</div>
+                                            <div class="strat-text-sober">
+                                                <strong>Campaña en Estaciones Turísticas & Fines de Semana:</strong>
+                                                Activar campañas digitales y códigos QR de conversión georreferenciados los sábados y domingos de verano en puntos turísticos de alta afluencia (parques, playas y centros recreativos), ofreciendo un descuento instantáneo al adquirir la membresía.
+                                            </div>
+                                        </div>
+                                        <div class="strat-item-sober">
+                                            <div class="strat-num-sober">2</div>
+                                            <div class="strat-text-sober">
+                                                <strong>Membresías Intermedias (Fin de Semana o Estacionales):</strong>
+                                                Crear un 'Pase de Verano' o una 'Membresía Anual de Fines de Semana' (acceso exclusivo vie-dom) a una fracción del costo. Esto reduce la barrera psicológica inicial y actúa como un puente natural hacia la membresía anual completa.
+                                            </div>
+                                        </div>
+                                        <div class="strat-item-sober">
+                                            <div class="strat-num-sober">3</div>
+                                            <div class="strat-text-sober">
+                                                <strong>Concientización Basada en Ahorro Acumulado:</strong>
+                                                Utilizar la aplicación móvil y notificaciones por correo electrónico después de viajes casuales prolongados (>20 minutos), mostrando un comparativo financiero: <em>'Hoy gastaste $X. Con la membresía anual, este viaje te habría costado $0 y habrías ahorrado $Y este mes'</em>.
+                                            </div>
+                                        </div>
+                                    """),
+                                    class_="report-card-body"
+                                ),
+                                class_="report-card"
+                            ),
+                            
+                            # Sección 6: Conclusión
+                            ui.div(
+                                ui.div("6. Conclusión y Recomendación Ejecutiva", class_="report-card-header"),
+                                ui.div(
+                                    ui.HTML("""
+                                        <p>La conversión de usuarios ocasionales a socios anuales no es solo una meta de marketing, sino la estrategia financiera de mayor rentabilidad y menor costo de adquisición para Cyclistic. La riqueza de los datos confirma que <strong>los ciclistas casuales ya aman y usan intensamente el sistema</strong>; la clave está en romper la barrera de compromiso financiero anual mediante productos flexibles, ofertas contextuales en tiempo real y la visualización directa del ahorro económico personal.</p>
+                                        <div class="signature-sober">
+                                            <div class="signature-line-sober"></div>
+                                            <div class="signature-title-sober">Presentado al Consejo Ejecutivo de Cyclistic</div>
+                                            <div class="signature-subtitle-sober">Por el Equipo de Análisis Computacional de Datos de Marketing</div>
+                                        </div>
+                                    """),
+                                    class_="report-card-body"
+                                ),
+                                class_="report-card"
+                            ),
+                            class_="row-gap-4"
+                        ),
+                        class_="row-gap-4 mb-5"
+                    ),
+                    style="padding: 1.5rem; max-width: 1200px; margin: 0 auto;"
+                )
+            ),
             id="main_nav_tabs"
         )
     ),

@@ -418,3 +418,212 @@ shiny-chat-container {
 .mb-5 {
     margin-bottom: 2rem !important;
 }
+
+/* ==========================================================================
+   === REPORT / EXECUTIVE SUMMARY PREMIUM STYLING (MONOCHROME & SOBER) ===
+   ========================================================================== */
+
+.report-card {
+    background: var(--bg-card) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--border-glow) !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 1.5rem;
+}
+
+.report-card:hover {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 12px 40px 0 rgba(255, 255, 255, 0.03) !important;
+}
+
+.report-card-header {
+    font-family: var(--font-cyber);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.report-card-body {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.report-sub-title {
+    font-family: var(--font-cyber);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.report-bullet-list {
+    padding-left: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.report-bullet-list li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    color: var(--text-secondary);
+}
+
+.report-bullet-list li strong {
+    color: #ffffff;
+}
+
+.report-badge-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.report-badge-sober {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.quote-block-sober {
+    border-left: 3px solid #ffffff;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-family: var(--font-cyber);
+    font-style: italic;
+    font-weight: 500;
+    color: #ffffff;
+    border-radius: 0 8px 8px 0;
+    line-height: 1.5;
+}
+
+.alert-block-sober {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.metrics-grid-sober {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 1.25rem 0;
+}
+
+.metric-item-sober {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.metric-item-sober:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.metric-val-sober {
+    font-family: var(--font-cyber);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.metric-lbl-sober {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.strat-item-sober {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+}
+
+.strat-num-sober {
+    background: #ffffff;
+    color: #0b0f19;
+    font-family: var(--font-cyber);
+    font-weight: 800;
+    font-size: 0.9rem;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.strat-text-sober {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.strat-text-sober strong {
+    color: #ffffff;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.signature-sober {
+    margin-top: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signature-line-sober {
+    width: 120px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin-bottom: 8px;
+}
+
+.signature-title-sober {
+    font-family: var(--font-cyber);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+}
+
+.signature-subtitle-sober {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
