@@ -1,0 +1,17 @@
+# Evitar subir los datasets pesados originales
+*tripdata.csv
+cyclistic_consolidado.csv
+cyclistic_consolidado_regional.csv
+
+# Cache de Python y temporales
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Metadatos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración local de IDEs
+.vscode/
+.idea/
