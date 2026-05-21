@@ -831,7 +831,7 @@ def server(input, output, session):
             <div style='border-top:1px solid rgba(255, 255, 255, 0.08); padding:10px 6px 0; margin-top:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;'>
                 <span style='font-size:0.75rem; color:#ffffff; font-weight:700; letter-spacing:0.5px;'>OLVERA AI SUITE</span>
                 <span style='font-size:0.75rem; color:rgba(255, 255, 255, 0.2);'>|</span>
-                <span style='font-size:0.75rem; color:#9ca3af;'>Engine: Gemini 1.5 Flash &bull; Contexto reactivo del dashboard inyectado en cada consulta</span>
+                <span style='font-size:0.75rem; color:#9ca3af;'>Engine: Gemini 3.5 Flash &bull; Contexto reactivo del dashboard inyectado en cada consulta</span>
             </div>
         """)
 
